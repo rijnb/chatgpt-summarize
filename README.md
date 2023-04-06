@@ -16,7 +16,7 @@ git clone https://github.com/rijnb/chatgpt-summarize
 For the latest usage info, type:
 
 ```
-chatgpt-summarize.sh <APIKEY> < <plaintext-file-to-summarize>
+chatgpt-summarize.sh
 
 ```
 
