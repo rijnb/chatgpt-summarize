@@ -1,8 +1,9 @@
 #!/usr/bin/env zsh
 #
 # This file uses ChatGPT to summarize text from stdin.
+# If CHATGPT_APIKEY is defined, it will be picked up.
 
-APIKEY=
+APIKEY=${CHATGPT_APIKEY}
 for ARG in "$@"
 do
     case "$ARG" in
@@ -21,7 +22,8 @@ if [[ -z "$APIKEY" ]]
 then
     echo "Usage: $(basename $0) --apikey=<APIKEY>"
     echo ""
-    echo "  --apikey <APIKEY>: Supply your ChatGPT API key."
+    echo "  --apikey <APIKEY>: Supply your ChatGPT API key, or set the"
+    echo "                     environemtn variable CHATGPT_APIKEY."
     exit -1
 fi
 
@@ -31,7 +33,8 @@ then
     exit -1
 fi
 
-TEXT=$(cat | tr '\n' ' ' | tr '\"' ' ' | tr "'" ' ')
+# Strip newlines and quotes.
+TEXT=$(cat | tr '\n' ' ' | tr '\"' ' ')
 
 if [ -z "$TEXT" ]
 then
@@ -39,9 +42,20 @@ then
     exit -1
 fi
 
-curl -s -X POST "https://api.openai.com/v1/chat/completions" \
+# Call ChatGPT, prefix text with request.
+REPLY=$(curl -s -X POST "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $APIKEY" \
-    -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "'$TEXT'"}]}' |
-    /usr/local/bin/jq '.choices[0].message.content' |
-    perl -pe 's/^.(.*?).$/$1/m'
+    -d "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Summarize the following text in 3-5 sentences. Here's the text: $TEXT\"}]}")
+
+# Parse JSON for 'content'.
+JSON=$(echo "$REPLY" | jq ".choices[0].message.content")
+if [[ "$JSON" == "null" ]]
+then
+    echo "ERROR: ChatGPT produced an error."
+    echo "$REPLY"
+    exit 1
+fi
+
+# Cut off first and last character.
+echo "$JSON" | cut -c2- | rev | cut -c2- | rev
