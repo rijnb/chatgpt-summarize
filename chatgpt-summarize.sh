@@ -56,7 +56,10 @@ fi
 
 
 # Strip newlines and quotes.
-echo "Stripping newlines and quotes..." 1>&2
+if [[ -z "$SILENT" ]]
+then
+    echo "Stripping newlines and quotes..." 1>&2
+fi
 TEXT=$(cat | tr '\n' ' ' | tr '\"' ' ')
 
 if [ -z "$TEXT" ]
@@ -65,14 +68,20 @@ then
     exit -1
 fi
 
-echo "Summarizing to $SENTENCES sentences using ChatGPT..." 1>&2
+if [[ -z "$SILENT" ]]
+then
+    echo "Summarizing to $SENTENCES sentences using ChatGPT..." 1>&2
+fi
 # Call ChatGPT, prefix text with request.
 REPLY=$(curl -s -X POST "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $APIKEY" \
     -d "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Summarize the following text in $SENTENCES sentences. $REQUEST. Here's the text: $TEXT\"}]}" | tr -cd '\11\12\15\40-\176')
 
-echo "Extracting summary..." 1>&2
+if [[ -z "$SILENT" ]]
+then
+    echo "Extracting summary..." 1>&2
+fi
 # Parse JSON for 'content'.
 JSON=$(echo "$REPLY" | jq ".choices[0].message.content")
 if [[ "$JSON" == "null" ]]
@@ -83,5 +92,8 @@ then
 fi
 
 # Cut off first and last character.
-echo "" 1>&2
+if [[ -z "$SILENT" ]]
+then
+    echo "Summary" 1>&2
+fi
 echo "$JSON" | cut -c2- | rev | cut -c2- | rev
