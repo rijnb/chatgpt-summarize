@@ -1,6 +1,6 @@
 # Summarize with ChatGPT
 
-Script to summarize text using ChatGPT.
+Script to summarize text using ChatGPT. This can be used, for example, to summarize mails.
 
 ## Installing and executing
 
