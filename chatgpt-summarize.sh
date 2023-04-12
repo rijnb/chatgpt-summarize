@@ -3,6 +3,17 @@
 # This file uses ChatGPT to summarize text from stdin.
 # If CHATGPT_APIKEY is defined, it will be picked up.
 
+function usage() {
+    echo "Usage: $(basename $0) --apikey=<APIKEY> [--sentences=<min-max>]"
+    echo ""
+    echo "  --apikey=<APIKEY>  : Supply your ChatGPT API key, or set the environment variable CHATGPT_APIKEY."
+    echo "  --sentences=<range>: Specify range for number of sentences of summary, like 3-5, or 10."
+    echo "  --ask=\"<request>\"  : Specify your own additional request, to be executed on the text. For example:"
+    echo "                             --ask \"Specify the urgency or importancy of the following text before the summary.\""
+    echo ""
+    echo "The script must be used with text supplied from stdin."
+}
+
 APIKEY=${CHATGPT_APIKEY}
 SENTENCES=3-5
 REQUEST=
@@ -28,18 +39,13 @@ done
 
 if [[ -z "$APIKEY" ]]
 then
-    echo "Usage: $(basename $0) --apikey=<APIKEY> [--sentences=<min-max>]"
-    echo ""
-    echo "  --apikey=<APIKEY>  : Supply your ChatGPT API key, or set the environment variable CHATGPT_APIKEY."
-    echo "  --sentences=<range>: Specify range for number of sentences of summary, like 3-5, or 10."
-    echo "  --ask=\"<request>\"  : Specify your own additional request, to be executed on the text. For example:"
-    echo "                             --ask \"Specify the urgency or importancy of the following text before the summary.\""
+    usage
     exit -1
 fi
 
 if [ -t 0 ]
 then
-    echo "ERROR: No stdin input available"
+    usage
     exit -1
 fi
 
