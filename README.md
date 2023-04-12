@@ -21,6 +21,7 @@ Usage: usage --apikey=<APIKEY> [--sentences=<min-max>]
 
   --apikey=<APIKEY>  : Supply your ChatGPT API key, or set the environment variable CHATGPT_APIKEY.
   --sentences=<range>: Specify range for number of sentences of summary, like 3-5, or 10.
+  --silent           : Do not output progress to stderr
   --ask="<request>"  : Specify your own additional request, to be executed on the text. For example:
                              --ask "Specify the urgency or importancy of the following text before the summary."
 
