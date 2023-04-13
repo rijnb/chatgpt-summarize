@@ -36,7 +36,8 @@ do
             REQUEST="${ARG#*=}"
             ;;
         *)
-            echo "Invalid argument: $arg"
+            echo "ERROR: Invalid argument '"$arg"'"
+            usage
             exit 1
             ;;
     esac
