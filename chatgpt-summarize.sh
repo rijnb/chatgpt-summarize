@@ -77,8 +77,7 @@ fi
 REPLY=$(curl -s -X POST "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $APIKEY" \
-    -d "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Summarize the following text in $SENTENCES sentences. $REQUEST. Here's the text: ${TEXT:0:4000}\"}]}" | tr -cd '\11\12\15\40-\176')
-
+    -d "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Summarize the input in $SENTENCES sentences. $REQUEST. Input: ${TEXT:0:4000}\"}]}" | tr -cd '\11\12\15\40-\176')
 if [[ -z "$SILENT" ]]
 then
     echo "Extracting summary..." 1>&2
@@ -95,8 +94,10 @@ then
 fi
 
 # Cut off first and last character.
-if [[ -z "$SILENT" ]]
+echo -n "Summary"
+if [[ "${TEXT:0:4000}" != "$TEXT" ]]
 then
-    echo "Summary" 1>&2
+    echo -n " (truncated)"
 fi
+echo -n ": "
 echo "$JSON" | cut -c2- | rev | cut -c2- | rev
