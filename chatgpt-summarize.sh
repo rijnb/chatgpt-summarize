@@ -12,7 +12,8 @@ function usage() {
     echo "  --ask=\"<request>\"  : Specify your own additional request, to be executed on the text. For example:"
     echo "                             --ask \"Specify the urgency or importancy of the following text before the summary.\""
     echo ""
-    echo "The script must be used with text supplied from stdin."
+    echo "The script sends the text from stdin to ChatGPT and requests a summary. If the input is larger than 4000"
+    echo "characters, it will be truncated to the first 4000 characters of the input."
 }
 
 APIKEY=${CHATGPT_APIKEY}

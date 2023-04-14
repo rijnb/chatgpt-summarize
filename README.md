@@ -25,6 +25,7 @@ Usage: usage --apikey=<APIKEY> [--sentences=<min-max>]
   --ask="<request>"  : Specify your own additional request, to be executed on the text. For example:
                              --ask "Specify the urgency or importancy of the following text before the summary."
 
-The script must be used with text supplied from stdin.
+The script sends the text from stdin to ChatGPT and requests a summary. If the input is larger than 4000
+characters, it will be truncated to the first 4000 characters of the input.
 ```
 
