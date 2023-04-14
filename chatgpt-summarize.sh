@@ -55,13 +55,12 @@ then
     exit -1
 fi
 
-
 # Strip newlines and quotes.
 if [[ -z "$SILENT" ]]
 then
     echo "Stripping newlines and quotes..." 1>&2
 fi
-TEXT=$(cat | tr '\n' ' ' | tr '\"' ' ')
+TEXT=$(cat | tr '\t\n\"' ' ')
 
 if [ -z "$TEXT" ]
 then
@@ -73,18 +72,21 @@ if [[ -z "$SILENT" ]]
 then
     echo "Summarizing to $SENTENCES sentences using ChatGPT..." 1>&2
 fi
+
 # Call ChatGPT, prefix text with request.
 REPLY=$(curl -s -X POST "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $APIKEY" \
-    -d "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Summarize the following text in $SENTENCES sentences. $REQUEST. Here's the text: $TEXT\"}]}" | tr -cd '\11\12\15\40-\176')
+    -d "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Summarize the following text in $SENTENCES sentences. $REQUEST. Here's the text: ${TEXT:0:4000}\"}]}" | tr -cd '\11\12\15\40-\176')
 
 if [[ -z "$SILENT" ]]
 then
     echo "Extracting summary..." 1>&2
 fi
+
 # Parse JSON for 'content'.
 JSON=$(echo "$REPLY" | jq ".choices[0].message.content")
+
 if [[ "$JSON" == "null" ]]
 then
     echo "ERROR: ChatGPT produced an error."
